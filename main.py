@@ -83,6 +83,9 @@ with aba1:
 with aba2:
     df = carregar_dados()
     
+    # Barra de Pesquisa
+    pesquisa = st.text_input("🔍 Pesquisar por Nome/Descrição ou Código:")
+    
     # Filtros e Botão de Ação no Topo
     c_f1, c_f2, c_f3 = st.columns(3)
     with c_f1: filtro_fam = st.multiselect("Família:", df['Família de Produto'].unique())
@@ -93,6 +96,14 @@ with aba2:
     
     # Aplicação de filtros
     df_f = df.copy()
+    if pesquisa:
+        desc_col = 'Descrição' if 'Descrição' in df_f.columns else 'nome'
+        cod_col = 'Código' if 'Código' in df_f.columns else 'codigo'
+        df_f = df_f[
+            df_f[desc_col].astype(str).str.contains(pesquisa, case=False, na=False) |
+            df_f[cod_col].astype(str).str.contains(pesquisa, case=False, na=False)
+        ]
+        
     if filtro_fam: df_f = df_f[df_f['Família de Produto'].isin(filtro_fam)]
     if filtro_marca and 'Marca' in df.columns: df_f = df_f[df_f['Marca'].isin(filtro_marca)]
     if filtro_modelo and 'Modelo' in df.columns: df_f = df_f[df_f['Modelo'].isin(filtro_modelo)]
